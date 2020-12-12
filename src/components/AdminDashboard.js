@@ -5,6 +5,7 @@ import { firestore } from '../services/firebase';
 const AdminDashboard = () => {
     let axios = require('axios')
     const [projects, setProjects] = useState([]);
+    const [loading, setLoading] = useState(false)
     const location = useLocation();
     const history = useHistory();
 
@@ -25,13 +26,13 @@ const AdminDashboard = () => {
         })
     }
 
-    const deleteProject = (project) => {
-
+    const deleteProject = (project, index) => {
+        setProjects(projects => projects.splice(index, 1))
         firestore.collection("projects").where("projectName", "==",project.projectName).get()
         .then((query) => {
             query.forEach((doc) => {
                 firestore.collection('projects').doc(doc.id).delete().then(function() {
-                    console.log("Document successfully deleted!");
+                    setLoading(true)
                 })
             })
         })
@@ -127,7 +128,7 @@ const AdminDashboard = () => {
                                             </li>
                                         </div>
                                         <li
-                                        className="list-group-item delete" onClick={() => {deleteProject(project)}}              
+                                        className="list-group-item delete" onClick={() => {deleteProject(project, index)}}              
                                         >
                                             <i className="fa fa-minus-circle pr-1"> Delete Project</i>
                                         </li>
