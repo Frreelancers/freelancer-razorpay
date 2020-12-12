@@ -74,8 +74,11 @@ const AdminDashboard = () => {
                 })
             })
         })
-
-
+        
+        setInterval(() => {
+            alert("Payment Processed!!")
+        }, 5000)
+        
     }
 
     const sendMail = (freelancerEmail) => {
