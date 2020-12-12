@@ -6,7 +6,7 @@ const FreelancerDashboard = () => {
     const [projects, setProjects] = useState([]);
     const location = useLocation();
     const email = location.state.email;
-    const history = useHistory;
+    const history = useHistory();
 
     useEffect(() => {
         firestore.collection('projects').where("status", "==", "submitted").get()
@@ -16,19 +16,35 @@ const FreelancerDashboard = () => {
                 })
             })
         
+        firestore.collection('projects').where("freelancer", "==", email).get()
+            .then((query) => {
+                query.forEach((doc) => {
+                    setProjects(projects => projects.concat({...doc.data(), id: doc.id}))
+                })
+            })
     }, [])
 
     const takeup = (projectName) => {
-        console.log(projectName)
+        firestore.collection('projects').where("projectName", "==", projectName).get()
+        .then((query) => {
+            query.forEach((doc) => {
+                firestore.collection('projects').doc(doc.id).update({
+                    freelancer: email,
+                    status: "taken"
+                })
+            })
+        })
         
     }
 
     const submission = (projectName) => {
         history.push({
-            pathname: '/submitProject'
+            pathname: '/submitProject',
+            state: {
+                email: email,
+                projectName: projectName
+            }
         })
-        console.log(projectName)
-        
     }
 
     return (
@@ -52,12 +68,12 @@ const FreelancerDashboard = () => {
                                 <div className="col-md-4 d-none d-lg-block">
                                     <ul className="list-group">
                                         <div>
-                                            <li className="list-group-item update" onClick={() => {takeup(index)}}>
+                                            <li className="list-group-item update" onClick={() => {takeup(project.projectName)}}>
                                                 <i className="fa fa-edit pr-1"> Take-Up Work</i>
                                             </li>
                                         </div>
                                         <li
-                                        className="list-group-item delete"  onClick={() => {submission(index)}}            
+                                        className="list-group-item delete"  onClick={() => {submission(project.projectName)}}            
                                         >
                                             <i className="fa fa-minus-circle pr-1"> Submit</i>
                                         </li>

@@ -11,6 +11,8 @@ import AdminDashboard from '../components/AdminDashboard';
 import CreateFreelancer from '../components/CreateFreelancer';
 import FreelancerDashboard from '../components/FreelancerDashboard';
 import UpdateProject from '../components/UpdateProject';
+import SubmitProject from '../components/SubmitProject';
+import ReviewFreelancer from '../components/ReviewFreelancer';
 
 const AppRouter = () => {
     return (
@@ -26,6 +28,8 @@ const AppRouter = () => {
                     <Route path="/adminDashboard" component={AdminDashboard} />
                     <Route path="/addFreelancer" component={CreateFreelancer} />
                     <Route path="/freelancerDashboard" component={FreelancerDashboard} />
+                    <Route path="/submitProject" component={SubmitProject} />
+                    <Route path="/reviewFreelancer" component={ReviewFreelancer} />
                     <Route path="/" component={Landing} />
                 </Switch>
             </main>

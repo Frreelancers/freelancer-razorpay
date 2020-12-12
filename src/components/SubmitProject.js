@@ -3,26 +3,27 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { firestore } from '../services/firebase'
 
 const SubmitProject = () => {
-    const [projectName, setProjectName] = useState("");
+    const [githubLink, setGithubLink] = useState("");
     const history = useHistory();
     const location = useLocation();
 
     const handleSubmit = () => {
-        firestore.collection('projects').add({
-            projectName: projectName,
-            amount: amount,
-            projectDescription: projectDescription,
-            startDate: startDate,
-            admin: location.state.email,
-            freelancer: "",
-            status: "submitted"
+        const project = location.state.projectName;
+        const email = location.state.email;
+
+        firestore.collection('projects').where("projectName", "==", project).get()
+        .then((query) => {
+            query.forEach((doc) => {
+                firestore.collection('projects').doc(doc.id).update({
+                    githubLink: githubLink,
+                    status: "completed"
+                })
+            })
         })
 
         history.push({
             pathname: '/freelancerDashboard',
-            state: {
-                email: location.state.email 
-            }
+            state: { email:  email }
         })
     }
 
@@ -37,22 +38,14 @@ const SubmitProject = () => {
                                 <input
                                     type="text"
                                     className="form-control form-control-lg"
-                                    placeholder="Repository Link"
+                                    placeholder="Github Repository Link"
                                     name="project"
-                                    value={projectName}
-                                />        
-                            </div>
-
-                            <div className="form-group">
-                                <label>File for demo</label>
-                                <input
-                                    type="file"
-                                    className="form-control form-control-lg"
-                                    name="project"
+                                    value={githubLink}
+                                    onChange={(e) => {setGithubLink(e.target.value)}}
                                 />        
                             </div>
                                 
-                                <input type="submit" className="btn btn-info btn-block mt-4" onClick={handleSubmit}/>
+                            <input type="submit" className="btn btn-info btn-block mt-4" onClick={handleSubmit}/>
                             </div>
                         </div>
                     </div>

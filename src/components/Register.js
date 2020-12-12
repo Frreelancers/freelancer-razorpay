@@ -42,7 +42,7 @@ const Register = () => {
                                 <input
                                     type="text"
                                     className="form-control form-control-lg"
-                                    placeholder="Email Address (Username)"
+                                    placeholder="Email Address"
                                     name="Username"
                                     value={email}
                                     onChange={(e) => {setEmail(e.target.value)}}

@@ -3,6 +3,7 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { firestore } from '../services/firebase';
 
 const AdminDashboard = () => {
+    let axios = require('axios')
     const [projects, setProjects] = useState([]);
     const location = useLocation();
     const history = useHistory();
@@ -22,7 +23,6 @@ const AdminDashboard = () => {
             pathname: '/updateProject',
             state: { email:  location.state.email,project:project}
         })
-        //console.log(project)
     }
 
     const deleteProject = (project) => {
@@ -43,7 +43,42 @@ const AdminDashboard = () => {
             pathname: '/adminDashboard',
             state: { email:  location.state.email}
         })
-        //console.log(project)
+    }
+
+    const reviewProject = (freelancer, githubLink) => {
+        history.push({
+            pathname: '/reviewFreelancer',
+            state: {
+                admin: location.state.email,
+                freelancer: freelancer,
+                githubLink: githubLink
+             }
+        })
+    }
+
+    const payout = (project) => {
+        firestore.collection('freelancers').where("email", "==", project.freelancer).get()
+        .then((query) => {
+            query.forEach((doc) => {
+                const freelancer = doc.data()
+                axios.post("https://freelancer-razorpay-api.herokuapp.com/razorpay", {
+                    project: project,
+                    freelancer: freelancer
+                })
+                .then((res) => {
+                    console.log(res)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+            })
+        })
+
+
+    }
+
+    const sendMail = (freelancerEmail) => {
+        window.location.href = `mailto:${freelancerEmail}`
     }
 
     return (
@@ -60,17 +95,17 @@ const AdminDashboard = () => {
                 <br />
                 <br />
                 {projects.map((project, index) => (
-                    <>
+                    <>  
                         <div className="card card-body bg-light mb-3" key={index}>
                             <div className="row">
                                 <div className="col-2">
-                                    <button className="btn btn-small btn-danger" disabled={projects.status !== "submitted"}>
+                                    <button className="btn btn-small btn-danger" disabled={project.status === "submitted"} onClick={() => {reviewProject(project.freelancer, project.githubLink)}}>
                                             Review
                                     </button>
-                                    <button className="btn btn-small btn-primary" disabled={projects.status !== "submitted"} style={{marginTop: "10px"}}>
+                                    <button className="btn btn-small btn-primary" disabled={project.status === "submitted"} style={{marginTop: "10px"}} onClick={() => {payout(project)}}>
                                             Payout
                                     </button>
-                                    <button className="btn btn-small btn-primary" disabled={projects.status !== "submitted"} style={{marginTop: "10px"}}>
+                                    <button className="btn btn-small btn-primary" disabled={project.status === "submitted"} style={{marginTop: "10px"}} onClick={() => {sendMail(project.freelancer)}}>
                                             Contact
                                     </button>
                                 </div>
@@ -80,7 +115,7 @@ const AdminDashboard = () => {
                                     <br>
                                     </br>
                                     {project.freelancer && <h4>Freelancer: {project.freelancer}</h4>}
-                                    {project.freelancer || <h4>Not Taken</h4>}
+                                    
                                 </div>
                                 
                             
