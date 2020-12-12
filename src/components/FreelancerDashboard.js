@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { firestore } from '../services/firebase';
 
 const FreelancerDashboard = () => {
     const [projects, setProjects] = useState([]);
     const location = useLocation();
     const email = location.state.email;
+    const history = useHistory;
 
     useEffect(() => {
         firestore.collection('projects').where("status", "==", "submitted").get()
@@ -18,6 +19,14 @@ const FreelancerDashboard = () => {
     }, [])
 
     const takeup = (projectName) => {
+        console.log(projectName)
+        
+    }
+
+    const submission = (projectName) => {
+        history.push({
+            pathname: '/submitProject'
+        })
         console.log(projectName)
         
     }
@@ -48,7 +57,7 @@ const FreelancerDashboard = () => {
                                             </li>
                                         </div>
                                         <li
-                                        className="list-group-item delete"                
+                                        className="list-group-item delete"  onClick={() => {submission(index)}}            
                                         >
                                             <i className="fa fa-minus-circle pr-1"> Submit</i>
                                         </li>

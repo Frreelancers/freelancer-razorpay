@@ -18,7 +18,32 @@ const AdminDashboard = () => {
     }, [])
 
     const updateProject = (project) => {
-        console.log(project)
+        history.push({
+            pathname: '/updateProject',
+            state: { email:  location.state.email,project:project}
+        })
+        //console.log(project)
+    }
+
+    const deleteProject = (project) => {
+
+        firestore.collection("projects").where("projectName", "==",project.projectName).get()
+        .then((query) => {
+            query.forEach((doc) => {
+                firestore.collection('projects').doc(doc.id).delete().then(function() {
+                    console.log("Document successfully deleted!");
+                })
+            })
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+
+        history.push({
+            pathname: '/adminDashboard',
+            state: { email:  location.state.email}
+        })
+        //console.log(project)
     }
 
     return (
@@ -67,7 +92,7 @@ const AdminDashboard = () => {
                                             </li>
                                         </div>
                                         <li
-                                        className="list-group-item delete"                
+                                        className="list-group-item delete" onClick={() => {deleteProject(project)}}              
                                         >
                                             <i className="fa fa-minus-circle pr-1"> Delete Project</i>
                                         </li>

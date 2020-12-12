@@ -8,6 +8,11 @@ const Navbar =  () => {
                     <div className="navbar-brand">
                         Easy Freelancing
                     </div>
+
+                    <div className="btn btn-lg btn-danger">
+                            Logout
+                    </div>
+
                 </div>
             </nav>
         </>
